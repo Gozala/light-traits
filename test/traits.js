@@ -1,6 +1,6 @@
 'use strict'
 
-var Trait = require('traits').Trait
+var Trait = require('light-traits').Trait
 ,   utils = require('./utils')
 ,   Data = utils.Data
 ,   Method = utils.Method
@@ -66,22 +66,23 @@ exports['test trait with accessor property'] = function(assert) {
   , { a: Accessor(get, set ) }
   )
 }
-/*
-exports['test:simple composition'] = function(test) {
-  assertSametrait(test,
-    compose(
-      trait({ a: 0, b: 1 }),
-      trait({ c: 2, d: testMethod })
-    ),
-    {
-      a: Data(0),
-      b: Data(1),
-      c: Data(2),
-      d: Method(testMethod)
-    }
-  );
-};
 
+exports['test simple composition'] = function(assert) {
+  function method() {}
+  assert.sameTrait
+  ( Trait
+    ( { a: 0, b: 1 }
+    , { c: 2, d: method }
+    )
+  , { a: Data(0)
+    , b: Data(1)
+    , c: Data(2)
+    , d: Method(method)
+    }
+  )
+}
+
+/*
 exports['test:composition with conflict'] = function(test) {
   assertSametrait(test,
     compose(
