@@ -1,0 +1,27 @@
+{ "name": "light-traits"
+, "version": "0.0.1"
+, "description": "Light javascript traits with syntax sugar."
+, "homepage": "http://github.com/Gozala/light-traits/"
+, "keywords": ["traits"]
+, "contributors":
+  [ "Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)" ]
+, "repository":
+  { "type": "git"
+  , "url": "git://github.com/Gozala/light-traits.git"
+  }
+, "bugs": { "web": "http://github.com/Gozala/light-traits/issues/" }
+, "directories":
+  { "doc": "./doc"
+  , "man": "./man"
+  , "lib": "./lib"
+  }
+, "dependencies": { "test": ">=0.0.2" }
+, "main": "./lib/traits"
+, "engines": { "node": ">=0.1.103" }
+, "licenses" :
+  [ { "type" : "MIT"
+    , "url" : "http://github.com/isaacs/npm/raw/master/LICENSE"
+    }
+  ]
+}
+
