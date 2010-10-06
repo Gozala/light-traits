@@ -1,6 +1,6 @@
 { "name": "light-traits"
 , "version": "0.0.1"
-, "description": "Light javascript traits with syntax sugar."
+, "description": "Light traits in javascript with some syntax sugar."
 , "homepage": "http://github.com/Gozala/light-traits/"
 , "keywords": ["traits"]
 , "contributors":
@@ -15,12 +15,12 @@
   , "man": "./man"
   , "lib": "./lib"
   }
-, "dependencies": { "test": ">=0.0.2" }
+, "dependencies": { "test": ">=0.0.3" }
 , "main": "./lib/traits"
 , "engines": { "node": ">=0.1.103" }
 , "licenses" :
-  [ { "type" : "MIT"
-    , "url" : "http://github.com/isaacs/npm/raw/master/LICENSE"
+  [ { "type" : "MPL 1.1/LGPL 2.1/GPL 2.0"
+    , "url" : "http://www.mozilla.org/MPL/"
     }
   ]
 }
