@@ -418,133 +418,93 @@ exports['test:override is associative'] = function(assert) {
     (Trait({ a: 3, c: 4, d: 5 }), Trait({ a: 6, c: 7, e: 8 }))
   )
 }
-/*
-exports['test:create simple'] = function(assert) {
-  var o1 = create(
-    Object.prototype,
-    Trait({ a: 1, b: function() { return this.a } })
-  )
 
-  test.assertEqual(
-    Object.prototype,
-    Object.getPrototypeOf(o1),
-    'o1 prototype'
+exports['test create simple'] = function(assert) {
+  var o1 = Trait(
+  { a: 1
+  , b: function() { return this.a }
+  }).create(Object.prototype)
+
+  assert.equal
+  ( Object.getPrototypeOf(o1)
+  , Object.prototype
+  , 'o1 prototype'
   )
-  test.assertEqual(1, o1.a, 'o1.a')
-  test.assertEqual(1, o1.b(), 'o1.b()')
-  test.assertEqual(
-    2,
-    Object.getOwnPropertyNames(o1).length,
-    'Object.keys(o1).length === 2'
+  assert.equal(1, o1.a, 'o1.a')
+  assert.equal(1, o1.b(), 'o1.b()')
+  assert.equal
+  ( Object.getOwnPropertyNames(o1).length
+  , 2
+  , 'Object.keys(o1).length === 2'
   )
 }
 
-exports['test:create with Array.prototype'] = function(assert) {
-  var o2 = create(Array.prototype, Trait({}))
-  test.assertEqual(
-    Array.prototype,
-    Object.getPrototypeOf(o2),
-    "o2 prototype"
+exports['test create with Array.prototype'] = function(assert) {
+  var o2 = Trait({}).create(Array.prototype)
+  assert.equal
+  ( Object.getPrototypeOf(o2)
+  , Array.prototype
+  , 'o2 prototype'
   )
 }
 
-exports['test:exception for incomplete Trait.required properties'] =
-function(assert) {
-  try {
-    create(Object.prototype, Trait({ foo: Trait.required }))
-    test.fail('expected create to complain about missing Trait.required props')
-  } catch(e) {
-    test.assertEqual(
-      'Error: Missing Trait.required property: foo',
-      e.toString(),
-      'required prop error'
+exports['test exception for incomplete required properties'] = function(assert) {
+  assert.throws
+  ( function() { Trait({ foo: Trait.required }).create(Object.prototype) }
+  , 'Missing required property: `foo`'
+  , 'required prop error'
+  )
+}
+
+exports['test exception for unresolved conflicts'] = function(assert) {
+  assert.throws
+  ( function() { Trait(Trait({ a: 0 }), Trait({ a: 1 })).create({}) }
+  , 'Remaining conflicting property: `a`'
+  , 'conflicting prop error'
+  )
+}
+
+exports['test verify that required properties are present but undefined'] = function(assert) {
+  var o4 = Object.create(Object.prototype, Trait({ foo: Trait.required }))
+  assert.ok('foo' in o4, 'required property present')
+  assert.throws
+  ( function() { o4.foo }
+  , 'Missing required property: `foo`'
+  , 'required prop error'
+  )
+}
+
+exports['test verify that conflicting properties are present'] = function(assert) {
+  var o5 = Object.create
+    ( Object.prototype
+    , Trait(Trait({ a: 0 }), Trait({ a: 1 }))
     )
-  }
-}
-
-exports['test:exception for unresolved conflicts'] = function(assert) {
-  try {
-    create({}, Trait(Trait({ a: 0 }), Trait({ a: 1 })))
-    test.fail('expected create to complain about unresolved conflicts')
-  } catch(e) {
-    test.assertEqual(
-      'Error: Remaining conflicting property: a',
-      e.toString(),
-      'conflicting prop error'
-    )
-  }
-}
-
-exports['test:verify that Trait.required properties are present but undefined'] =
-function(assert) {
-  try {
-    var o4 = Object.create(Object.prototype, Trait({ foo: Trait.required }))
-    test.assertEqual(true, 'foo' in o4, 'required property present')
-    try {
-      var foo = o4.foo
-      test.fail('access to Trait.required property must throw')
-    } catch(e) {
-      test.assertEqual(
-        'Error: Missing Trait.required property: foo',
-        e.toString(),
-        'required prop error'
-      )
-    }
-  } catch(e) {
-    test.fail('did not expect create to complain about Trait.required props')
-  }
-}
-
-exports['test:verify that conflicting properties are present'] =
-function(assert) {
-  try {
-    var o5 = Object.create(
-      Object.prototype,
-      Trait(Trait({ a: 0 }), Trait({ a: 1 }))
-    )
-    test.assertEqual(true, 'a' in o5, 'conflicting property present')
-    try {
-      var a = o5.a // accessors or data prop
-      test.fail('expected conflicting prop to cause exception')
-    } catch (e) {
-      test.assertEqual(
-        'Error: Remaining conflicting property: a',
-        e.toString(),
-        'conflicting prop access error'
-      )
-    }
-  } catch(e) {
-    test.fail('did not expect create to complain about conflicting props')
-  }
+  assert.ok('a' in o5, 'conflicting property present')
+  assert.throws
+  ( function() { o5.a }
+  , 'Remaining conflicting property: `a`'
+  , 'conflicting prop access error'
+  )
 }
 
 exports['test diamond with conflicts'] = function(assert) {
-  function makeT1(x) Trait({ m: function() { return x } })
-  function makeT2(x) Trait(Trait({ t2: 'foo' }), makeT1(x))
-  function makeT3(x) Trait(Trait({ t3: 'bar' }), makeT1(x))
+  function makeT1(x) { return Trait({ m: function() { return x } }) }
+  function makeT2(x) { return Trait(Trait({ t2: 'foo' }), makeT1(x)) }
+  function makeT3(x) { return Trait(Trait({ t3: 'bar' }), makeT1(x)) }
 
   var T4 = Trait(makeT2(5), makeT3(5))
-  try {
-    var o = create(Object.prototype, T4)
-    test.fail('expected diamond prop to cause exception')
-  } catch(e) {
-    test.assertEqual(
-      'Error: Remaining conflicting property: m',
-      e.toString(),
-      'diamond prop conflict'
-    )
-  }
+
+  assert.throws
+  ( function() { T4.create(Object.prototype) }
+  , 'Remaining conflicting property: `m`'
+  , 'diamond prop conflict'
+  )
 }
 
-exports['test:providing requirements through proto'] = function(assert) {
-  try {
-    var t = create({ Trait.required: 'test'}, Trait({ Trait.required: Trait.required }))
-    test.assertEqual('test', t.required, 'property from proto is inherited')
-  } catch(e) {
-    test.fail('Required properties may be provided through proto')
-  }
+exports['test providing requirements through proto'] = function(assert) {
+  var t = Trait({ required: Trait.required }).create({ required: 'test' })
+  assert.equal(t.required, 'test', 'property from proto is inherited')
 }
-*/
-
 
 require('test').run(exports)
+
