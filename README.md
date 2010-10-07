@@ -1,3 +1,5 @@
+#This branch uses yet non standart javascript features available in Jägermonkey & is flavored by Mozilla coding style#
+
 Light Traits
 ============
 
