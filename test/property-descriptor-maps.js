@@ -56,4 +56,4 @@ exports['test composition of identical props does not cause conflict'] = functio
   )
 }
 
-require('test').run(exports)
+if (module == require.main) require('test').run(exports)
