@@ -14,9 +14,11 @@
   { "doc": "./doc"
   , "man": "./man"
   , "lib": "./lib"
+  , "test": "./test"
   }
 , "dependencies": { "test": ">=0.0.3" }
 , "main": "./lib/traits"
+, "scripts": { "test": "node active/package/test/all.js" }
 , "engines": { "node": ">=0.1.103" }
 , "licenses" :
   [ { "type" : "MPL 1.1/LGPL 2.1/GPL 2.0"
