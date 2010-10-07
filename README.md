@@ -27,9 +27,9 @@ This implementation is more optimal in terms of object instantiation speed and
 memory footprint. This is achieved by not binding `this` pseudo variable in all
 accessors and methods of the composed object to an instance, which allows
 shared functions across objects, it also matches better overall behavior of the
-language. __(BTW Similar can be achieved in traitjs as well in which case the
+language. _(BTW Similar can be achieved in traitjs as well in which case the
 claim of being more optimal will not longer be true, it's just not a default
-behavior at least not yet :)__
+behavior at least not yet :)_
 
 ###Better ergonomics###
 
