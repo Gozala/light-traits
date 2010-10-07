@@ -71,8 +71,22 @@ exports['test trait with accessor property'] = function(assert) {
 exports['test simple composition'] = function(assert) {
   assert.sameTrait
   ( Trait
-    ( { a: 0, b: 1 }
-    , { c: 2, d: method }
+    ( Trait({ a: 0, b: 1 })
+    , Trait({ c: 2, d: method })
+    )
+  , { a: Data(0)
+    , b: Data(1)
+    , c: Data(2)
+    , d: Method(method)
+    }
+  )
+}
+
+exports['test composition with descriptor map'] = function(assert) {
+  assert.sameTrait
+  ( Trait
+    ( Trait({ a: 0, b: 1 })
+    , { c: { value: 2 }, d: { value: method } }
     )
   , { a: Data(0)
     , b: Data(1)
@@ -96,6 +110,20 @@ exports['test:composition with conflict'] = function(assert) {
   )
 }
 
+exports['test:composition descriptor map & conflict'] = function(assert) {
+  assert.sameTrait
+  (
+    Trait
+    ( Trait({ a: 0, b: 1 })
+    , { a: { value: 2 }, c: { value: method } }
+    )
+  , { a: Conflict('a')
+    , b: Data(1)
+    , c: Method(method)
+    }
+  )
+}
+
 exports['test composition of identical props does not cause conflict'] = function(assert) {
   assert.sameTrait
   (
@@ -103,6 +131,23 @@ exports['test composition of identical props does not cause conflict'] = functio
     (
       Trait({ a: 0, b: 1 }),
       Trait({ a: 0, c: method })
+    ),
+    { a: Data(0)
+    , b: Data(1)
+    , c: Method(method)
+    }
+  )
+}
+
+exports['test composition of identical props does not cause conflict even if descriptor map is used'] = function(assert) {
+  assert.sameTrait
+  (
+    Trait
+    (
+      Trait({ a: 0, b: 1 }),
+      { a: { value: 0, writable: true, configurable: true, enumerable: true }
+      , c: { value: method } 
+      }
     ),
     { a: Data(0)
     , b: Data(1)
