@@ -12,13 +12,13 @@ function method() {}
 
 exports.Assert = require('./assert').Assert
 exports['test empty trait'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({})
   , {}
   )
 }
 exports['test simple trait'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait(
     { a: 0,
       b: method
@@ -30,7 +30,7 @@ exports['test simple trait'] = function(assert) {
   )
 }
 exports['test simple trait with Trait.required property'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait(
     { a: Trait.required
     , b: 1
@@ -43,7 +43,7 @@ exports['test simple trait with Trait.required property'] = function(assert) {
 }
 
 exports['test ordering of trait properties is irrelevant'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait(
     { a: 0
     , b: 1
@@ -62,14 +62,14 @@ exports['test trait with accessor property'] = function(assert) {
   var record = { get a() {}, set a(v) {} }
   var get = Object.getOwnPropertyDescriptor(record,'a').get
   var set = Object.getOwnPropertyDescriptor(record,'a').set
-  assert.sameTrait
+  assert.equalTraits
   ( Trait(record)
   , { a: Accessor(get, set ) }
   )
 }
 
 exports['test simple composition'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait
     ( Trait({ a: 0, b: 1 })
     , Trait({ c: 2, d: method })
@@ -83,7 +83,7 @@ exports['test simple composition'] = function(assert) {
 }
 
 exports['test composition with conflict'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   (
     Trait
     ( Trait({ a: 0, b: 1 })
@@ -97,7 +97,7 @@ exports['test composition with conflict'] = function(assert) {
 }
 
 exports['test composition of identical props does not cause conflict'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   (
     Trait
     (
@@ -112,7 +112,7 @@ exports['test composition of identical props does not cause conflict'] = functio
 }
 
 exports['test composition with identical Trait.required props'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait
     ( Trait({ a: Trait.required, b: 1 })
     , Trait({ a: Trait.required, c: method })
@@ -125,7 +125,7 @@ exports['test composition with identical Trait.required props'] = function(asser
 }
 
 exports['test composition satisfying a Trait.required prop'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   (
     Trait
     ( Trait({ a: Trait.required, b: 1 })
@@ -138,7 +138,7 @@ exports['test composition satisfying a Trait.required prop'] = function(assert) 
 }
 
 exports['test compose is neutral wrt conflicts'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait
     ( Trait(Trait({ a: 1 }), Trait({ a: 2 }))
     , Trait({ b: 0 })
@@ -150,7 +150,7 @@ exports['test compose is neutral wrt conflicts'] = function(assert) {
 }
 
 exports['test conflicting prop overrides Trait.required prop'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait
     ( Trait( Trait({ a: 1 }), Trait({ a: 2 }) )
     , Trait({ a: Trait.required })
@@ -160,14 +160,14 @@ exports['test conflicting prop overrides Trait.required prop'] = function(assert
 }
 
 exports['test compose is commutative'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait(Trait({ a: 0, b: 1 }), Trait({ c: 2, d: method }))
   , Trait(Trait({ c: 2, d: method }), Trait({ a: 0, b: 1 }))
   )
 }
 
 exports['test compose is commutative, also for Trait.required/conflicting props'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait
     ( Trait({ a: 0, b: 1, c: 3, e: Trait.required })
     , Trait({ c: 2, d: method })
@@ -180,7 +180,7 @@ exports['test compose is commutative, also for Trait.required/conflicting props'
 }
 
 exports['test compose is associative'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait
     ( Trait({ a: 0, b: 1, c: 3, d: Trait.required })
     , Trait
@@ -199,7 +199,7 @@ exports['test compose is associative'] = function(assert) {
 }
 
 exports['test diamond import of same prop does not generate conflict'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait
     ( Trait(Trait({ b: 2 }), Trait({ a: 1 }))
     , Trait(Trait({ c: 3 }), Trait({ a: 1 }))
@@ -210,7 +210,7 @@ exports['test diamond import of same prop does not generate conflict'] = functio
 }
 
 exports['test resolve with empty resolutions has no effect'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait(
     { a: 1
     , b: Trait.required
@@ -224,7 +224,7 @@ exports['test resolve with empty resolutions has no effect'] = function(assert) 
 }
 
 exports['test resolve: renaming'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ a: 1, b: Trait.required, c: method }).resolve({ a: 'A', c: 'C' })
   , { A: Data(1)
     , b: Required()
@@ -236,7 +236,7 @@ exports['test resolve: renaming'] = function(assert) {
 }
 
 exports['test resolve: renaming to conflicting name causes conflict, order 1'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ a: 1, b: 2 }).resolve({ a: 'b'})
   , { b: Conflict('b')
     , a: Required()
@@ -245,77 +245,77 @@ exports['test resolve: renaming to conflicting name causes conflict, order 1'] =
 }
 
 exports['test resolve: renaming to conflicting name causes conflict, order 2'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ b: 2, a: 1 }).resolve({ a: 'b' })
   , { b: Conflict('b'), a: Required() }
   )
 }
 
 exports['test resolve: simple exclusion'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ a: 1, b: 2 }).resolve({ a: undefined })
   , { a: Required(), b: Data(2) }
   )
 }
 
 exports['test resolve: exclusion to "empty" trait'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ a: 1, b: 2 }).resolve({ a: null, b: undefined })
   , { a: Required(), b: Required() }
   )
 }
 
 exports['test resolve: exclusion and renaming of disjoint props'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ a: 1, b: 2 }).resolve({ a: undefined, b: 'c' })
   , { a: Required(), c: Data(2), b: Required() }
   )
 }
 
 exports['test resolve: exclusion and renaming of overlapping props'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ a: 1, b: 2 }).resolve({ a: undefined, b: 'a' })
   , { a: Data(2), b: Required() }
   )
 }
 
 exports['test resolve: renaming to a common alias causes conflict'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ a: 1, b: 2 }).resolve({ a: 'c', b: 'c' })
   , { c: Conflict('c'), a: Required(), b: Required() }
   )
 }
 
 exports['test resolve: renaming overrides Trait.required target'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ a: Trait.required, b: 2 }).resolve({ b: 'a' })
   , { a: Data(2), b: Required() }
   )
 }
 
 exports['test resolve: renaming Trait.required properties has no effect'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ a: 2, b: Trait.required }).resolve({ b: 'a' })
   , { a: Data(2), b: Required() }
   )
 }
 
 exports['test resolve: renaming of non-existent props has no effect'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ a: 1, b: 2 }).resolve({ a: 'c', d: 'c' })
   , { c: Data(1), b: Data(2), a: Required() }
   )
 }
 
 exports['test resolve: exclusion of non-existent props has no effect'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ a: 1 }).resolve({ b: undefined })
   , { a: Data(1) }
   )
 }
 
 exports['test resolve is neutral w.r.t. Trait.required properties'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ a: Trait.required, b: Trait.required, c: 'foo', d: 1 }).resolve(
     { a: 'c'
     , b: undefined
@@ -329,35 +329,35 @@ exports['test resolve is neutral w.r.t. Trait.required properties'] = function(a
 }
 
 exports['test resolve supports swapping of property names, ordering 1'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ a: 1, b: 2 }).resolve({ a: 'b', b: 'a' })
   , { a: Data(2), b: Data(1) }
   )
 }
 
 exports['test resolve supports swapping of property names, ordering 2'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ a: 1, b: 2 }).resolve({ b: 'a', a: 'b' })
   , { a: Data(2), b: Data(1) }
   )
 }
 
 exports['test resolve supports swapping of property names, ordering 3'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ b: 2, a: 1 }).resolve({ b: 'a', a: 'b' })
   , { a: Data(2), b: Data(1) }
   )
 }
 
 exports['test resolve supports swapping of property names, ordering 4'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ b: 2, a: 1 }).resolve({ a: 'b', b: 'a' })
   , { a: Data(2), b: Data(1) }
   )
 }
 
 exports['test override of mutually exclusive traits'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ a: 1, b: 2 }).override(Trait({ c: 3, d: method }))
   , { a: Data(1)
     , b: Data(2)
@@ -368,21 +368,21 @@ exports['test override of mutually exclusive traits'] = function(assert) {
 }
 
 exports['test override of mutually exclusive traits is compose'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ a: 1, b: 2 }).override({ c: 3, d: method })
   , Trait(Trait({ d: method, c: 3 }), Trait({ b: 2, a: 1 }))
   )
 }
 
 exports['test override of overlapping traits'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ a: 1, b: 2 }).override(Trait({ a: 3, c: method }))
   , { a: Data(1), b: Data(2), c: Method(method) }
   )
 }
 
 exports['test three-way override of overlapping traits'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ a: 1, b: 2 }).override
     ( { b: 4, c: 3 }
     , Trait({ a: 3, c: method, d: 5 })
@@ -392,26 +392,26 @@ exports['test three-way override of overlapping traits'] = function(assert) {
 }
 
 exports['test override replaces Trait.required properties'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ a: Trait.required, b: 2 }).override(Trait({ a: 1, c: method }))
   , { a: Data(1), b: Data(2), c: Method(method) }
   )
 }
 
 exports['test override is not commutative'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ a: 1, b: 2 }).override(Trait({ a: 3, c: 4 }))
   , { a: Data(1), b: Data(2), c: Data(4) }
   )
 
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ a: 3, c: 4 }).override(Trait({ a: 1, b: 2 }))
   , { a: Data(3), b: Data(2), c: Data(4) }
   )
 }
 
 exports['test:override is associative'] = function(assert) {
-  assert.sameTrait
+  assert.equalTraits
   ( Trait({ a: 1, b: 2 }).override(Trait({ a: 3, c: 4, d: 5 })).override
     ( Trait({ a: 6, c: 7, e: 8 }) )
   , Trait({ a: 1, b: 2 }).override
