@@ -17,13 +17,15 @@
   , "test": "./test"
   }
 , "dependencies": { "test": ">=0.0.5" }
-, "main": "./lib/traits"
+, "main": "./lib/light-traits"
 , "scripts": { "test": "node test/all.js" }
-, "engines": { "node": ">=0.1.103" }
+, "engines":
+  { "node": ">=0.1.103"
+  , "teleport": ">=0.2.0"
+  }
 , "licenses" :
   [ { "type" : "MPL 1.1/LGPL 2.1/GPL 2.0"
     , "url" : "http://www.mozilla.org/MPL/"
     }
   ]
 }
-
