@@ -51,7 +51,10 @@ Examples
       }
       var pointTrait = Trait(
         ColorTrait('red'), // a color trait
-      , Trait({ get x() { return this._x }
+      , Trait(
+        { _x: Trait.required
+        , _y: Trait.required
+        , get x() { return this._x }
         , get y() { return this._y }
         , toString: function toString() { return '' + this.x + '@' + this.y }
         })
