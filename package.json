@@ -1,5 +1,5 @@
 { "name": "light-traits"
-, "version": "0.0.6"
+, "version": "0.0.7"
 , "description": "Light traits in javascript with some syntax sugar."
 , "homepage": "http://github.com/Gozala/light-traits/"
 , "keywords": ["traits"]
