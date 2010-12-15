@@ -356,69 +356,6 @@ exports['test resolve supports swapping of property names, ordering 4'] = functi
   )
 }
 
-exports['test override of mutually exclusive traits'] = function(assert) {
-  assert.equalTraits
-  ( Trait({ a: 1, b: 2 }).override(Trait({ c: 3, d: method }))
-  , { a: Data(1)
-    , b: Data(2)
-    , c: Data(3)
-    , d: Method(method)
-    }
-  )
-}
-
-exports['test override of mutually exclusive traits is compose'] = function(assert) {
-  assert.equalTraits
-  ( Trait({ a: 1, b: 2 }).override({ c: 3, d: method })
-  , Trait(Trait({ d: method, c: 3 }), Trait({ b: 2, a: 1 }))
-  )
-}
-
-exports['test override of overlapping traits'] = function(assert) {
-  assert.equalTraits
-  ( Trait({ a: 1, b: 2 }).override(Trait({ a: 3, c: method }))
-  , { a: Data(1), b: Data(2), c: Method(method) }
-  )
-}
-
-exports['test three-way override of overlapping traits'] = function(assert) {
-  assert.equalTraits
-  ( Trait({ a: 1, b: 2 }).override
-    ( { b: 4, c: 3 }
-    , Trait({ a: 3, c: method, d: 5 })
-    )
-  , { a: Data(1), b: Data(2), c: Data(3), d: Data(5) }
-  )
-}
-
-exports['test override replaces Trait.required properties'] = function(assert) {
-  assert.equalTraits
-  ( Trait({ a: Trait.required, b: 2 }).override(Trait({ a: 1, c: method }))
-  , { a: Data(1), b: Data(2), c: Method(method) }
-  )
-}
-
-exports['test override is not commutative'] = function(assert) {
-  assert.equalTraits
-  ( Trait({ a: 1, b: 2 }).override(Trait({ a: 3, c: 4 }))
-  , { a: Data(1), b: Data(2), c: Data(4) }
-  )
-
-  assert.equalTraits
-  ( Trait({ a: 3, c: 4 }).override(Trait({ a: 1, b: 2 }))
-  , { a: Data(3), b: Data(2), c: Data(4) }
-  )
-}
-
-exports['test:override is associative'] = function(assert) {
-  assert.equalTraits
-  ( Trait({ a: 1, b: 2 }).override(Trait({ a: 3, c: 4, d: 5 })).override
-    ( Trait({ a: 6, c: 7, e: 8 }) )
-  , Trait({ a: 1, b: 2 }).override
-    (Trait({ a: 3, c: 4, d: 5 }), Trait({ a: 6, c: 7, e: 8 }))
-  )
-}
-
 exports['test create simple'] = function(assert) {
   var o1 = Trait(
   { a: 1
