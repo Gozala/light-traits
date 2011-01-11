@@ -1,5 +1,5 @@
 { "name": "light-traits"
-, "version": "0.0.2"
+, "version": "0.0.8"
 , "description": "Light traits in javascript with some syntax sugar."
 , "homepage": "http://github.com/Gozala/light-traits/"
 , "keywords": ["traits"]
@@ -14,14 +14,18 @@
   { "doc": "./doc"
   , "man": "./man"
   , "lib": "./lib"
+  , "test": "./test"
   }
-, "dependencies": { "test": ">=0.0.3" }
-, "main": "./lib/traits"
-, "engines": { "node": ">=0.1.103" }
+, "dependencies": { "test": ">=0.0.5" }
+, "main": "./lib/light-traits"
+, "scripts": { "test": "node test/all.js" }
+, "engines":
+  { "node": ">=0.1.103"
+  , "teleport": ">=0.2.0"
+  }
 , "licenses" :
   [ { "type" : "MPL 1.1/LGPL 2.1/GPL 2.0"
     , "url" : "http://www.mozilla.org/MPL/"
     }
   ]
 }
-
