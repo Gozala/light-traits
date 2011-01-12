@@ -61,7 +61,7 @@ exports['test composition with identical required props'] = function(assert) {
   assert.equalTraits
   ( Trait
     ( Trait({ a: Trait.required, b: 1 })
-    , { a: { value: Trait.required }, c: { value: method } }
+    , { a: { required: true }, c: { value: method } }
     )
   , { a: Required()
     , b: Data(1)
@@ -193,8 +193,8 @@ exports['test create simple'] = function(assert) {
   assert.equal(1, o1.a, 'o1.a')
   assert.equal(1, o1.b(), 'o1.b()')
   assert.equal
-  ( Object.getOwnPropertyNames(o1).length
-  , 2
+  ( Object.keys(o1).length
+  , 1
   , 'Object.keys(o1).length === 2'
   )
 }
@@ -253,8 +253,8 @@ exports['test diamond with conflicts'] = function(assert) {
 
 exports['test providing requirements through proto'] = function(assert) {
   var t = Trait
-  ( null
-  , { required: { value: Trait.required } }
+  ( {}
+  , { required: { required: true } }
   ).create({ required: 'test' })
   assert.equal(t.required, 'test', 'property from proto is inherited')
 }

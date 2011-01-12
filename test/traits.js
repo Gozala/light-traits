@@ -370,7 +370,7 @@ exports['test create simple'] = function(assert) {
   assert.equal(1, o1.a, 'o1.a')
   assert.equal(1, o1.b(), 'o1.b()')
   assert.equal
-  ( Object.getOwnPropertyNames(o1).length
+  ( Object.keys(o1).length
   , 2
   , 'Object.keys(o1).length === 2'
   )
