@@ -1,145 +1,82 @@
-# light-traits #
+# Traits #
 
-## Traits ##
+[Traits](http://en.wikipedia.org/wiki/Trait_%28computer_science%29) are a simple
+mechanism for structuring object-oriented programs. They represent reusable and
+composable building blocks of functionality that factor out the common
+attributes and behavior of objects.
 
-[Traits] are a simple composition mechanism for structuring object-oriented
-programs that represent reusable building blocks, with a goal to factor out
-a common piece of functionality that can be reused by multiple abstractions,
-regardless of their inheritance chain _(prototype chain to be more precise)_.
+They are a more robust alternative to
+[mixins](http://en.wikipedia.org/wiki/Mixins) and
+[multiple inheritance](http://en.wikipedia.org/wiki/Multiple_inheritance),
+because name clashes must be explicitly resolved and composition is commutative
+and associative (i.e. the order of traits in a composition is irrelevant).
 
-It is also can be described as a more robust alternative to [mixins] & [multiple
-inheritance]. More robust because name clashes must be resolved explicitly by
-composer where composition is commutative & associative (order of traits in
-composition is irrelevant).
+Use traits to share functionality between similar objects without duplicating
+code or creating complex inheritance chains.
 
-## Ecmascript 5 ##
+## Trait Creation ##
 
-Library is designed to work with the new object manipulation APIs defined in
-[Ecmascript-262, Edition 5]. Constructed traits actually do represent property
-descriptor maps that inherit from `Trait.prototype` to expose methods described
-in details in following sections.
+To create a trait, call the `Trait` constructor function exported by this
+module, passing it a JavaScript object that specifies the properties of the
+trait.
 
-## Trait construction ##
-
-Module exports trait constructor function `Trait` that takes javascript object
-literal as an argument and produces trait providing own properties of an object
-used to construct it.
-
-    var Trait = require('light-traits').Trait;
-    var TBar = Trait({
-      foo: 'foo',
+    let Trait = require('light-traits').Trait;
+    let t = Trait({
+      foo: "foo",
       bar: function bar() {
-        return 'Hi Bar!'
+        return "Hi!"
       },
       baz: Trait.required
-    })
+    });
 
-Example above composes a trait `TBar` (by convention we prefix traits with a
-capital "T"), that defines property `foo` with value `"foo"` and property `bar`
-with a value of `bar` function. Here is a representation of `TBar`.
+Traits can both provide and require properties. A *provided* property is a
+property for which the trait itself provides a value. A *required* property is a
+property that the trait needs in order to function correctly but for which
+it doesn't provide a value.
 
-    // TBar
-    { foo: {
-        value: 'foo',
-        enumerable: true,
-        configurable: true,
-        writable: true
-      },
-      bar: {
-        value: function b() {
-          return 'bar'
-        },
-        enumerable: true,
-        configurable: true,
-        writable: true
-      },
-      baz: {
-        get baz() { throw new Error('Missing required property: `baz`') }
-        set baz() { throw new Error('Missing required property: `baz`') }
-      },
-      __proto__: Trait.prototype
-    }
+Required properties must be provided by another trait or by an object with a
+trait. Creation of an object with a trait will fail if required properties are
+not provided. Specify a required property by setting the value of the property
+to `Trait.required`.
 
-So trait is just a plain object literal that is an ES5 property descriptor map.
-Also notice that `__proto__` property it's there just to illustrate that trait
-object is an instance of `Trait` and there for it inherits all the properties
-(described in the following sections) from `Trait.prototype`.
+## Object Creation ##
 
-### required properties ###
+Create objects with a single trait by calling the trait's `create` method. The
+method takes a single argument, the object to serve as the new object's
+prototype. If no prototype is specified, the new object's prototype will be
+`Object.prototype`.
 
-Trait in addition to providing properties can also require properties. Required
-properties can be defined by properties with a singleton value `Trait.required`
-(see `baz` property in the example). Instantiation of such traits will fail
-unless those requirements are satisfied (see "Trait instantiation" section).
-
-## Trait instantiation ##
-
-Trait instances inherit `create` method that is used to instantiate objects
-with a properties defined by it. Method optionally takes one argument from
-which resulting object will inherit. If argument is not passed
-`Object.prototoype` will be used instead.
-
-    var TFoo = Trait({
+    let t = Trait({
       foo: 'foo',
       bar: 2
-    })
-    var foo1 = TFoo.create()
-    var foo2 = TFoo.create({ name: 'Super' })
+    });
+    let foo1 = t.create();
+    let foo2 = t.create({ name: 'Super' });
 
-Here is a representation of `foo1` and `foo2` (Property `__proto__` is only used
-to illustrate prototype chains).
+## Trait Composition ##
 
-    // foo1
-    { foo: 'foo',
-      bar: 2,
-      __proto__: Object.prototype
-    }
+Traits are designed to be composed with other traits to create objects with the
+properties of multiple traits. To compose an object with multiple traits, you
+first create a composite trait and then use it to create the object. A composite
+trait is a trait that contains all of the properties of the traits from which it
+is composed. In the following example, MagnitudeTrait is a composite trait.
 
-    // foo2
-    { foo: 'foo',
-      bar: 2,
-      __proto__: {
-        name: 'Super',
-        __proto__: Object.prototype
-      }
-    }
-
-Now let's take a look at trait `T1` again (from the very first example). In
-contrast to `TFoo` it defines required properties that have to be satisfied
-during instantiation:
-
-      var bar1 = TBar.create()
-      var bar2 = TBar.create({ name: 'Super' })
-      var bar3 = TBar.create({ baz: 'baz' })
-
-First two lines of the example above will throw exceptions with a message
-`'Missing required property: baz'` unlike the third line which satisfies
-required `baz` property by providing `baz` property through a prototype chain.
-
-## Trait composition ##
-
-Since traits represent building blocks encapsulating common piece of
-functionality composing new building blocks out of existing ones is pretty
-common. Function `Trait` can takes multiple traits as an arguments and returns
-a single, fresh, "composite" trait containing all of the properties of its
-arguments:
-
-    var TEquality = Trait({
+    let EqualityTrait = Trait({
       equal: Trait.required,
       notEqual: function notEqual(x) {
         return !this.equal(x)
       }
     });
-    var TComparison = Trait({
+    
+    let ComparisonTrait = Trait({
       less: Trait.required,
       notEqual: Trait.required,
       greater: function greater(x) {
         return !this.less(x) && this.notEqual(x)
       }
     });
-    var TMagnitude = Trait(TEquality, TComparison);
-
-This composition can also be illustrated as a following graph:
+    
+    let MagnitudeTrait = Trait.compose(EqualityTrait, ComparisonTrait);
 
 <?xml version="1.0"?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xl="http://www.w3.org/1999/xlink" version="1.1" viewBox="-11 121 490 190" width="490px" height="190px">
@@ -165,7 +102,7 @@ This composition can also be illustrated as a following graph:
       <rect x="9" y="137.33334" width="141" height="14"/>
       <rect x="9" y="137.33334" width="141" height="14" stroke="black" stroke-width="1px"/>
       <text transform="translate(14 137.33334)" fill="black">
-        <tspan font-family="Helvetica" font-size="12" font-weight="bold" x="38.49707" y="11" textLength="54.00586">TEquality</tspan>
+        <tspan font-family="Helvetica" font-size="12" font-weight="bold" x="38.49707" y="11" textLength="54.00586">EqualityTrait</tspan>
       </text>
       <rect x="9" y="273" width="141" height="14"/>
       <rect x="9" y="273" width="141" height="14" stroke="black" stroke-width="1px"/>
@@ -185,7 +122,7 @@ This composition can also be illustrated as a following graph:
       <rect x="9" y="231" width="141" height="14"/>
       <rect x="9" y="231" width="141" height="14" stroke="black" stroke-width="1px"/>
       <text transform="translate(14 231)" fill="black">
-        <tspan font-family="Helvetica" font-size="12" font-weight="bold" x=".15332031" y="11" textLength="112.67578">TComparison</tspan>
+        <tspan font-family="Helvetica" font-size="12" font-weight="bold" x=".15332031" y="11" textLength="112.67578">ComparisonTrait</tspan>
       </text>
       <rect x="317.75" y="235.5" width="141" height="14"/>
       <rect x="317.75" y="235.5" width="141" height="14" stroke="black" stroke-width="1px"/>
@@ -210,7 +147,7 @@ This composition can also be illustrated as a following graph:
       <rect x="317.75" y="179.5" width="141" height="14"/>
       <rect x="317.75" y="179.5" width="141" height="14" stroke="black" stroke-width="1px"/>
       <text transform="translate(322.75 179.5)" fill="black">
-        <tspan font-family="Helvetica" font-size="12" font-weight="bold" x="31.83789" y="11" textLength="67.32422">TMagnitude</tspan>
+        <tspan font-family="Helvetica" font-size="12" font-weight="bold" x="31.83789" y="11" textLength="67.32422">MagnitudeTrait</tspan>
       </text>
       <path d="M 150 248.83887 L 158.89999 248.83887 L 235.9 248.83887 L 235.9 224.66113 L 308.85 224.66113 L 310.85 224.66113" marker-end="url(#SharpArrow_Marker)" stroke="black" stroke-linecap="butt" stroke-linejoin="miter" stroke-width="1px"/>
       <path d="M 150 171.15845 L 158.89999 171.15845 L 233.9 171.15845 L 233.9 201.6749 L 308.85 201.6749 L 310.85 201.6749" marker-end="url(#SharpArrow_Marker)" stroke="black" stroke-linecap="butt" stroke-linejoin="miter" stroke-width="1px"/>
@@ -218,104 +155,138 @@ This composition can also be illustrated as a following graph:
   </g>
 </svg>
 
-As you can see **required** properties can also be satisfied through a
-compositions as in this example `notEqual` required property of a `TComparison`
-trait was satisfied by a `TEquality` trait's same named property.
+## Trait Resolution ##
 
-## Trait resolution ##
+Composite traits have conflicts when two of the traits in the composition
+provide properties with the same name but different values (when compared using
+the `===` strict equality operator). In the following example, `TC` has a
+conflict because `T1` and `T2` both define a `foo` property:
 
-Trait compositions will lead to conflicts if traits composed provide same named
-properties:
-
-    var T1 = Trait({
+    let T1 = Trait({
       foo: function () {
         // do something
       },
       bar: 'bar',
       t1: 1
     });
-    var T2 = Trait({
+    
+    let T2 = Trait({
       foo: function() {
         // do something else
       },
       bar: 'bar',
       t2: 2
     });
-    var TC = Trait(T2, T1);
-    TC.create()
+    
+    let TC = Trait.compose(T1, T2);
 
-Last line of this example will throw an exception with a message: `"Remaining
-conflicting property: foo"`. Such conflicts can be resolved by calling `resolve`
-inherited method of a trait / traits of a composition that takes an object
-literal as an argument representing resolution map and returns newly composed
-trait with resolved properties.
+Attempting to create an object from a composite trait with conflicts throws a
+`remaining conflicting property` exception. To create objects from such traits,
+you must resolve the conflict.
 
-### Resolving conflicting properties to a required properties ###
+You do so by excluding or renaming the conflicting property of one of the
+traits. Excluding a property removes it from the composition, so the composition
+only acquires the property from the other trait. Renaming a property gives it a
+new, non-conflicting name at which it can be accessed.
 
-When desired result of a composition is just an overridden property it's best to
-resolve conflicting property to a required property. In that case another
-conflicting property will just satisfy created required property:
+In both cases, you call the `resolve` method on the trait whose property you
+want to exclude or rename, passing it an object. Each key in the object is the
+name of a conflicting property; each value is either `null` to exclude the
+property or a string representing the new name of the property.
 
-    var TC2 = (T2.resolve({ foo: null }), T1)
+For example, the conflict in the previous example could be resolved by excluding
+the `foo` property of the second trait.
 
-### Renaming conflicting properties ###
+    let TC = Trait(T1, T2.resolve({ foo: null }));
 
-In other cases final composition might need to keep all the conflicting
-properties. In this case conflicting properties be renamed:
+It could also be resolved by renaming the `foo` property of the first trait to
+`foo2`:
 
-    var TC3 = (T1.resolve({ foo: 'foo1' }), T2)
+    let TC = Trait(T1.resolve({ foo: "foo2" }), T2);
 
-Also please note that `bar` property have not created a conflict, that's because
-the properties with a same values don't cause any conflicts, for the same reason
-result of the following example is the same as `TC3`.
+When you resolve a conflict, the same-named property of the other trait (the one
+that wasn't excluded or renamed) remains available in the composition under its
+original name.
 
-    Trait(TC3, TC3, T2)
+## Constructor Functions ##
 
-## Interchangeability ##
+When your code is going to create more than one object with traits, you may want
+to define a constructor function to create them. To do so, create a composite
+trait representing the traits the created objects should have, then define a
+constructor function that creates objects with that trait and whose prototype is
+the prototype of the constructor:
 
-As it was mentioned traits are ES5 property descriptor maps and there for they
-are freely interchangeable. Traits can be used as descriptor maps with build in
-JavaScript  methods:
+    let PointTrait = Trait.compose(T1, T2, T3);
+    function Point(options) {
+      let point = PointTrait.create(Point.prototype);
+      return point;
+    }
 
-    Object.create(proto, TFoo)
-    Object.defineProperties(myObject, TBar)
+## Property Descriptor Maps ##
 
-Please note though that traits with conflicting / required properties won't
-throw exceptions with those functions, instead exceptions will be thrown on
-property such a property access of created object.
+Traits are designed to work with the new object manipulation APIs defined in
+[ECMAScript-262, Edition
+5](http://www.ecma-international.org/publications/standards/Ecma-262.htm) (ES5).
+Traits are also property descriptor maps that inherit from `Trait.prototype` to
+expose methods for creating objects and resolving conflicts.
 
-Also this works other way round, property descriptor maps can be used in
-compositions. This may be useful for defining non-enumerable properties for
-example:
+The following trait definition:
 
-    var TC = Trait(
+    let FooTrait = Trait({
+      foo: "foo",
+      bar: function bar() {
+        return "Hi!"
+      },
+      baz: Trait.required
+    });
+
+Creates the following property descriptor map:
+
+    {
+      foo: {
+        value: 'foo',
+        enumerable: true,
+        configurable: true,
+        writable: true
+      },
+    
+      bar: {
+        value: function b() {
+          return 'bar'
+        },
+        enumerable: true,
+        configurable: true,
+        writable: true
+      },
+    
+      baz: {
+        get baz() { throw new Error('Missing required property: `baz`') }
+        set baz() { throw new Error('Missing required property: `baz`') }
+      },
+    
+      __proto__: Trait.prototype
+    }
+
+Since Traits are also property descriptor maps, they can be used with built-in
+`Object.*` methods that accept such maps:
+
+    Object.create(proto, FooTrait);
+    Object.defineProperties(myObject, FooTrait);
+
+Note that conflicting and required properties won't cause exceptions to be
+thrown when traits are used with the `Object.*` methods, since those methods are
+not aware of those constraints. However, such exceptions will be thrown when the
+property with the conflict or the required but missing property is accessed.
+
+Property descriptor maps can also be used in compositions. This may be useful
+for defining non-enumerable properties, for example:
+
+    let TC = Trait.compose(
       Trait({ foo: 'foo' }),
       { bar: { value: 'bar', enumerable: false } }
-    )
+    );
 
-_Also please make sure that more that property descriptor map is not the only one
-argument to a `Trait`, since in that case it will be interpreted as object
-literal with a properties to be defined._
+_When using property descriptor maps in this way, make sure the map is not the
+only argument to `Trait.compose`, since in that case it will be interpreted as
+an object literal with properties to be defined._
 
-## Mixing traits with a regular inheritance ##
-
-It's important to notice that traits are not replacement for native inheritance
-mechanism, in fact it's combining both will give a much better results:
-
-    // Classes
-    function Point(options) {
-      var PointTrait.create(Point.prototype)
-      // constructor logic here
-    }
-
-    // Derived classes
-    function Derived() {
-      // some logic here
-    }
-    Derived.prototype = TSuper.create(Derived.prototype)
-
-
-[Ecmascript-262, Edition 5]:http://www.ecma-international.org/publications/standards/Ecma-262.htm
-[Traits]:http://en.wikipedia.org/wiki/Trait_%28computer_science%29
-[mixins]:http://en.wikipedia.org/wiki/Mixins
-[multiple inheritance]:http://en.wikipedia.org/wiki/Multiple_inheritance
