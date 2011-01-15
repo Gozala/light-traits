@@ -20,7 +20,7 @@ exports['test simple composition'] = function(assert) {
   , { a: Data(0)
     , b: Data(1)
     , c: Data(2, false, false, false)
-    , d: Method(method, true, false, true)
+    , d: Method(method, true, false, false)
     }
   )
 }
@@ -259,4 +259,5 @@ exports['test providing requirements through proto'] = function(assert) {
   assert.equal(t.required, 'test', 'property from proto is inherited')
 }
 
-if (module == require.main) require('test').run(exports)
+// Disabling this check since it is not yet supported by jetpack.
+//if (module == require.main) require('test').run(exports)

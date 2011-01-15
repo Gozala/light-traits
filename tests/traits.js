@@ -443,4 +443,3 @@ exports['test providing requirements through proto'] = function(assert) {
   assert.equal(t.required, 'test', 'property from proto is inherited')
 }
 
-if (module == require.main) require('test').run(exports)
