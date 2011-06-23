@@ -1,11 +1,11 @@
 {
   "name": "light-traits",
   "id": "light-traits",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Light traits in javascript with some syntax sugar.",
   "homepage": "http://github.com/Gozala/light-traits/",
   "keywords": ["traits"],
-  "contributors": ["Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)"],
+  "author": "Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)",
   "repository": {
     "type": "git",
     "url": "git://github.com/Gozala/light-traits.git"
@@ -13,26 +13,15 @@
   "bugs": {
     "web": "http://github.com/Gozala/light-traits/issues/"
   },
-  "directories": {
-    "doc": "./doc",
-    "man": "./man",
-    "lib": "./lib",
-    "test": "./test"
-  },
-  "main": "./lib/light-traits",
+  "main": "./light-traits.js",
   "scripts": {
     "test": "node tests/test-all.js"
   },
-  "overlay": {
-    "node": {
-      "dependencies": {
-        "test": ">=0.0.5"
-      }
-    }
+  "devDependencies": {
+    "test": ">=0.0.10"
   },
   "engines": {
-    "node": ">=0.1.103",
-    "teleport": ">=0.2.0"
+    "node": ">=0.4.x"
   },
   "licenses": [{
     "type": "MIT",
