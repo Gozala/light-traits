@@ -1,4 +1,11 @@
-'use strict'
+/* vim:set ts=2 sw=2 sts=2 expandtab */
+/*jshint newcap: true undef: true es5: true node: true devel: true
+         forin: true */
+/*global define: true */
+
+(typeof define === "undefined" ? function ($) { $(require, exports, module); } : define)(function (require, exports, module, undefined) {
+
+'use strict';
 
 var ERR_CONFLICT = 'Remaining conflicting property: '
 ,   ERR_REQUIRED = 'Missing required property: '
@@ -48,3 +55,4 @@ exports.Conflict = function Conflict(name) {
   })
 }
 
+});

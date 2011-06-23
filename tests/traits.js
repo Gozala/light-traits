@@ -1,6 +1,13 @@
-'use strict'
+/* vim:set ts=2 sw=2 sts=2 expandtab */
+/*jshint newcap: true undef: true es5: true node: true devel: true
+         forin: true */
+/*global define: true */
 
-var Trait = require('light-traits').Trait
+!(typeof define === "undefined" ? function ($) { $(require, exports, module); } : define)(function (require, exports, module, undefined) {
+
+'use strict';
+
+var Trait = require('../light-traits').Trait
 ,   utils = require('./utils')
 ,   Data = utils.Data
 ,   Method = utils.Method
@@ -388,7 +395,7 @@ exports['test create with Array.prototype'] = function(assert) {
 exports['test exception for incomplete required properties'] = function(assert) {
   assert.throws
   ( function() { Trait({ foo: Trait.required }).create(Object.prototype) }
-  , 'Missing required property: `foo`'
+  , /Missing required property: `foo`/
   , 'required prop error'
   )
 }
@@ -396,7 +403,7 @@ exports['test exception for incomplete required properties'] = function(assert) 
 exports['test exception for unresolved conflicts'] = function(assert) {
   assert.throws
   ( function() { Trait(Trait({ a: 0 }), Trait({ a: 1 })).create({}) }
-  , 'Remaining conflicting property: `a`'
+  , /Remaining conflicting property: `a`/
   , 'conflicting prop error'
   )
 }
@@ -406,7 +413,7 @@ exports['test verify that required properties are present but undefined'] = func
   assert.ok('foo' in o4, 'required property present')
   assert.throws
   ( function() { o4.foo }
-  , 'Missing required property: `foo`'
+  , /Missing required property: `foo`/
   , 'required prop error'
   )
 }
@@ -419,7 +426,7 @@ exports['test verify that conflicting properties are present'] = function(assert
   assert.ok('a' in o5, 'conflicting property present')
   assert.throws
   ( function() { o5.a }
-  , 'Remaining conflicting property: `a`'
+  , /Remaining conflicting property: `a`/
   , 'conflicting prop access error'
   )
 }
@@ -433,7 +440,7 @@ exports['test diamond with conflicts'] = function(assert) {
 
   assert.throws
   ( function() { T4.create(Object.prototype) }
-  , 'Remaining conflicting property: `m`'
+  , /Remaining conflicting property: `m`/
   , 'diamond prop conflict'
   )
 }
@@ -443,3 +450,4 @@ exports['test providing requirements through proto'] = function(assert) {
   assert.equal(t.required, 'test', 'property from proto is inherited')
 }
 
+});

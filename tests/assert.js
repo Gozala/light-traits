@@ -1,3 +1,11 @@
+/* vim:set ts=2 sw=2 sts=2 expandtab */
+/*jshint newcap: true undef: true es5: true node: true devel: true
+         forin: true */
+/*global define: true */
+
+!(typeof define === "undefined" ? function ($) { $(require, exports, module); } : define)(function (require, exports, module, undefined) {
+
+
 'use strict'
 
 var BaseAssert = require('test/assert').Assert;
@@ -91,3 +99,5 @@ var AssertDescriptor = {
 exports.Assert = function Assert() {
   return Object.create(BaseAssert.apply(null, arguments), AssertDescriptor);
 };
+
+});

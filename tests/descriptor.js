@@ -1,6 +1,13 @@
+/* vim:set ts=2 sw=2 sts=2 expandtab */
+/*jshint newcap: true undef: true es5: true node: true devel: true
+         forin: true */
+/*global define: true */
+
+!(typeof define === "undefined" ? function ($) { $(require, exports, module); } : define)(function (require, exports, module, undefined) {
+
 "use strict";
 
-var Trait = require("light-traits").Trait;
+var Trait = require("../light-traits").Trait;
 var utils = require("./utils");
 var Data = utils.Data;
 var Method = utils.Method;
@@ -263,13 +270,13 @@ exports["test create with Array.prototype"] = function(assert) {
 exports["test exception for incomplete required properties"] = function(assert) {
   assert.throws(function() {
     Trait({ foo: Trait.required }).create(Object.prototype)
-  }, "Missing required property: `foo`", "required prop error");
+  }, /Missing required property: `foo`/, "required prop error");
 }
 
 exports["test exception for unresolved conflicts"] = function(assert) {
   assert.throws(function() {
     Trait(Trait({ a: 0 }), Trait({ a: 1 })).create({})
-  }, "Remaining conflicting property: `a`", "conflicting prop error");
+  }, /Remaining conflicting property: `a`/, "conflicting prop error");
 }
 
 exports["test conflicting properties are present"] = function(assert) {
@@ -281,7 +288,7 @@ exports["test conflicting properties are present"] = function(assert) {
   assert.ok("a" in o5, "conflicting property present");
   assert.throws(function() {
     o5.a
-  }, "Remaining conflicting property: `a`", "conflicting prop access error");
+  }, /Remaining conflicting property: `a`/, "conflicting prop access error");
 };
 
 exports["test diamond with conflicts"] = function(assert) {
@@ -315,7 +322,7 @@ exports["test diamond with conflicts"] = function(assert) {
 
   assert.throws(function() {
     T4.create(Object.prototype);
-  }, "Remaining conflicting property: `m`", "diamond prop conflict");
+  }, /Remaining conflicting property: `m`/, "diamond prop conflict");
 };
 
 exports["test providing requirements through proto"] = function(assert) {
@@ -330,3 +337,4 @@ exports["test providing requirements through proto"] = function(assert) {
 if (module == require.main)
   require("test").run(exports);
 
+});
