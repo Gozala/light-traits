@@ -1,5 +1,11 @@
 # Changes #
 
+## 0.2.0 / 2011-06-24 ##
+
+ - Docs.
+ - Tests.
+ - Formating.
+
 ## 0.1.1 / 2011-06-24 ##
 
  - Simplified package layout.
