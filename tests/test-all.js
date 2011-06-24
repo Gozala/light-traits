@@ -7,8 +7,9 @@
 
 "use strict";
 
-exports["test traits from objects"] = require("./traits");
-exports["test traits from property descriptor maps"] = require("./descriptor");
+exports["test traits from objects"] = require("./object-tests");
+exports["test traits from descriptors"] = require("./descriptor-tests");
+exports["test inheritance"] = require("./inheritance-tests");
 
 if (module == require.main)
   require('test').run(exports);

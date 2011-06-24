@@ -5,14 +5,13 @@
 
 !(typeof define === "undefined" ? function ($) { $(require, exports, module); } : define)(function (require, exports, module, undefined) {
 
+"use strict";
 
-'use strict'
-
-var BaseAssert = require('test/assert').Assert;
+var BaseAssert = require("test/assert").Assert;
 
 /**
  * Whether or not given property descriptors are equivalent. They are
- * equivalent either if both are marked as 'conflict' or 'required' property
+ * equivalent either if both are marked as "conflict" or "required" property
  * or if all the properties of descriptors are equal.
  * @param {Object} actual
  * @param {Object} expected
@@ -27,9 +26,9 @@ function equalDescriptors(actual, expected) {
   return actual.get === expected.get &&
          actual.set === expected.set &&
          actual.value === expected.value &&
-         (true !== actual.enumerable) === (true !== expected.enumerable) &&
-         (true !== actual.configurable) === (true !== expected.configurable) &&
-         (true !== actual.writable) === (true !== expected.writable);
+         !!actual.enumerable === !!expected.enumerable &&
+         !!actual.configurable === !!expected.configurable &&
+         !!actual.writable === !!expected.writable;
 }
 
 /**
@@ -73,16 +72,16 @@ var AssertDescriptor = {
       var difference;
       var actualKeys = Object.getOwnPropertyNames(actual);
       var expectedKeys = Object.getOwnPropertyNames(expected);
-  
+
       if (equivalentSets(actualKeys, expectedKeys)) {
         this.fail({
           operator: "equalTraits",
-          message: 'Traits define different properties',
-          actual: actualKeys.sort().join(','),
-          expected: expectedKeys.sort().join(','),
+          message: "Traits define different properties",
+          actual: actualKeys.sort().join(","),
+          expected: expectedKeys.sort().join(","),
         });
       }
-      else if (difference = findNonEquivalentPropertyName(actual, expected)) {
+      else if ((difference = findNonEquivalentPropertyName(actual, expected))) {
         this.fail({
           operator: "equalTraits",
           message: "Traits define non-equivalent property `" + difference + "`",
@@ -93,7 +92,8 @@ var AssertDescriptor = {
       else {
         this.pass(message || "Traits are equivalent.");
       }
-  }}
+    }
+  }
 };
 
 exports.Assert = function Assert() {
