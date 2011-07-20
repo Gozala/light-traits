@@ -3,7 +3,12 @@
          forin: true */
 /*global define: true */
 
-!(typeof define === "undefined" ? function ($) { $(require, exports, module); } : define)(function (require, exports, module, undefined) {
+;(typeof define === "undefined" ? 
+typeof exports === 'undefined' ?
+function(global){return function($) {$(null, global)}}(this):
+function ($) { $(require, exports, module); } : 
+define)
+(function (require, exports, module, undefined) {
 
 "use strict";
 
@@ -425,7 +430,8 @@ function compose(trait1, trait2/*, ...*/) {
  * @returns {Object}
  *    `object` that was passed as a first argument.
  */
-function defineProperties(object, properties) {
+function defineProperties(object, properties, option) {
+	if (option == null) option = {required:true}
 
   // Create a map into which we will copy each verified property from the given
   // `properties` description map. We use it to verify that none of the
@@ -437,13 +443,20 @@ function defineProperties(object, properties) {
   // Coping each property from a given `properties` descriptor map to a
   // verified map of property descriptors.
   Object.keys(properties).forEach(function(name) {
-
+	
+	// NOTE: should ignore '__proto__' which used by es5-shim in old browsers
+	// In fact, Object.keys() or getOwnPropertyNames() should never return '__proto__'
+	// This has been fixed in my fork of es5-shim <https://github.com/hax/es5-shim>
+	// But if u still use unpatched es5-shim, u should uncomment next statement
+	
+	// if (name === '__proto__') return 
+	
     // If property is marked as "required" property and we don't have a same
     // named property in a given `object` we throw an exception. If `object`
     // has same named property just skip this property since required property
     // is was inherited and there for requirement was satisfied.
     if (isRequiredProperty(properties, name)) {
-      if (!(name in object))
+      if (!(name in object) && option.required)
         throwRequiredPropertyError(name);
     }
 
@@ -496,6 +509,12 @@ function create(prototype, properties) {
   // property in the given `properties` descriptor is marked as "required" or
   // "conflict" property.
   return defineProperties(object, properties);
+}
+
+// added by hax
+function augment(object, properties, option) {
+	overrideBuiltInMethods(object, Trait.prototype);
+	return defineProperties(object, properties, option);
 }
 
 /**
@@ -555,6 +574,27 @@ Object.freeze(Object.defineProperties(Trait.prototype, {
     enumerable: true
   },
 
+  /**
+   * `augment` is like `create`, except that it doesn't create new object,
+   * but augment the passing object.
+   * See <https://github.com/hax/traits.js> for rational and use cases
+   *    - An exception is thrown if this trait defines a property that is
+   *      marked as required property and same named property is not
+   *      found in a given `prototype`.
+   *    - An exception is thrown if this trait contains property that is
+   *      marked as "conflict" property.
+   * @param {Object}
+   *    object to be augmented
+   * @returns {Object}
+   *    The original object but augmented with all of the properties described by the trait.
+   */
+  augment: {
+    value: function augmentTrait(object, option) {
+      return augment(object, this, option);
+    },
+    enumerable: true
+  },
+  
   /**
    * Composes a new resolved trait, with all the same properties as the original
    * trait, except that all properties whose name is an own property of
