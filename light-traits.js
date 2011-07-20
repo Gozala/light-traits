@@ -633,6 +633,24 @@ Trait.required = Object.freeze(Object.create(Object.prototype, {
 }));
 Object.freeze(Trait.required.toString.prototype);
 
+// Add static methods to match traits.js API, 
+// so we can migrate to light-traits smoothly
+/**
+ * @see create
+ */
+Trait.create = Object.freeze(create);
+Object.freeze(create.prototype);
+
+/**
+ * @see augment
+ */
+Trait.augment = Object.freeze(augment);
+Object.freeze(augment.prototype);
+
+// TODO: missing Trait.override() ?
+//       traits.js has this and it seems useful
+
+ 
 exports.Trait = Object.freeze(Trait);
 
 });
