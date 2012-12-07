@@ -49,8 +49,9 @@ features this library is not going to work, luckily there are other libraries
 that shim JavaScript engines so that might be an option to go with.
 
 ## Examples ##
+<a href="https://www.runnable.com/#gozala/light-traits/app.js/launch" target="_blank"><img src="https://www.runnable.com/external/styles/assets/runnablebtn.png" style="width:67px;height:25px;"></a>  
 
-      var Trait = require('https!raw.github.com/Gozala/light-traits/v0.2.0/light-traits.js').Trait
+    var Trait = require('https!raw.github.com/Gozala/light-traits/v0.2.0/light-traits.js').Trait
       function ColorTrait(color) {
         return Trait({ color: function() { return color } })
       }
